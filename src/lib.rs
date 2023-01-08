@@ -5,7 +5,7 @@ use aes_gcm::KeyInit;
 use ring::{digest, pbkdf2};
 
 const CREDENTIAL_LEN: usize = digest::SHA512_OUTPUT_LEN;
-const PASSWORD_HASH_ITERATIONS: u32 = 100_000;
+const PASSWORD_HASH_ITERATIONS: u32 = 300_000;
 
 pub fn encrypt_password(password: &[u8], salt: &[u8], server_salt: &[u8]) -> [u8; 64] {
     let n_iter = NonZeroU32::new(PASSWORD_HASH_ITERATIONS).unwrap();
@@ -31,14 +31,23 @@ pub fn encrypt_password(password: &[u8], salt: &[u8], server_salt: &[u8]) -> [u8
     second_pbkdf2_hash
 }
 
-pub fn verify_password(previous_hash: &[u8], password: &[u8], salt: &[u8]) -> bool {
+pub fn verify_password(previous_hash: &[u8], password: &[u8], salt: &[u8], server_salt: &[u8]) -> bool {
     let n_iter = NonZeroU32::new(PASSWORD_HASH_ITERATIONS).unwrap();
+    let mut first_pbkdf2_hash = [0u8; CREDENTIAL_LEN];
+
+    pbkdf2::derive(
+        pbkdf2::PBKDF2_HMAC_SHA512,
+        n_iter,
+        server_salt,
+        password,
+        &mut first_pbkdf2_hash,
+    );
 
     pbkdf2::verify(
         pbkdf2::PBKDF2_HMAC_SHA512,
         n_iter,
         salt,
-        password,
+        &first_pbkdf2_hash,
         previous_hash,
     ) == Ok(())
 }

@@ -4,12 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
 aes-gcm = "0.10.1"
 num = "0.4.0"
-rand = "0.8.5"
 ring = "0.17.0-alpha.11"
-rug = "1.17.0"
-serde = { version = "1.0.125", features = ["derive"] }
-sha3 = "0.10.6"
+
+[dependencies.gmp-mpfr-sys]
+features = ["force-cross", "use-system-libs"]
