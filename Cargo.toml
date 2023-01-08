@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-#[lib]
-#crate-type = ["cdylib"]
-#name = "enigma"
+[lib]
+crate-type = ["lib", "cdylib"]
+name = "enigma"
 
 [dependencies]
 aes-gcm = "0.10.1"
